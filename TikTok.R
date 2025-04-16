@@ -14,30 +14,9 @@ library(dplyr)
 library(tidyverse)
 library(ggplot2)
 library(plotly)
-library(moments)
-library(plotly)
-library(RColorBrewer)
-library(moments)
-library(ggcorrplot)
-library(corrplot)
-library(GGally)
-library(caret)
-library(Amelia)
-library(pscl)
-library(ROCR)
-library(tm)
-library(SnowballC)
-library(wordcloud)
-library(e1071)
-library(gmodels)
-theme_set(theme_bw())
-
 #=================================
 # LOAD DATASET
 #=================================
-# Switch your working directory to where ever you have downloaded the file.
-setwd('C:/Users/reyna/Documents/MSc in Data Analytics/Data Mining & Machine Learning 1/0. CA')
-
 # Read in our csv and put it in a data.frame.
 df<- read.csv('tiktok_dataset.csv',  header=T, na.strings=c(""), stringsAsFactors = T)
 
@@ -54,32 +33,6 @@ str(df)
 
 #summarize dataset
 summary(df)
-
-#---------------------------------
-# Checking unique values in each variable
-#---------------------------------
-#count unique values in each column
-sapply(df, function(x) length(unique(x)))
-
-#set "X" column as row names
-df <- df %>% column_to_rownames(., var = 'X.')
-
-#video_id is going to first column
-df<-df %>% relocate(video_id)
-
-#Checking unique values in variables by length = 3, 2 and 56
-sort(unique(df$claim_status))
-sort(unique(df$verified_status))
-sort(unique(df$author_ban_status))
-sort(unique(df$video_duration_sec))
-
-#Convert categorical data into numeric because these variables are numerical
-df$video_view_count<-as.integer(df$video_view_count)
-df$video_like_count<-as.integer(df$video_like_count)
-df$video_share_count<-as.integer(df$video_share_count)
-df$video_download_count<-as.integer(df$video_download_count)
-df$video_comment_count<-as.integer(df$video_comment_count)
-
 #---------------------------------
 # Handling Missing Values
 #---------------------------------
@@ -127,27 +80,6 @@ ggplotly(download)
 comment<-ggplot(df, aes(x=video_comment_count, fill= claim_status)) + geom_histogram( position="identity") + scale_color_brewer() +
   labs(title = "Distribution of Video's comment  ", caption = " Figure X", x= "Number of comments")
 ggplotly(comment)
-
-#---------------------------------
-# VISUALIZATIONS BETWEEN VARIABLES
-#---------------------------------
-#video duration vs video view
-sct1<-ggplot(df, aes(x = author_ban_status, y = video_duration_sec)) + geom_point(aes(color = factor(author_ban_status))) + ggtitle("Scatterplot Status ban duration vs Video duration")
-ggplotly(sct1)
-sct2<-ggplot(df, aes(x = video_view_count, y = video_like_count)) + geom_point(aes(color = factor(author_ban_status))) + ggtitle("Scatterplot Video-views vs Video-Like")
-ggplotly(sct2)
-sct3<-ggplot(df, aes(x = video_view_count, y = video_share_count)) + geom_point(aes(color = factor(author_ban_status))) + ggtitle("Scatterplot Video-viewsvs Video-share")
-ggplotly(sct3)
-sct4<-ggplot(df, aes(x = video_view_count, y = video_download_count)) + geom_point(aes(color = factor(author_ban_status))) + ggtitle("Scatterplot Video-views vs Video-download")
-ggplotly(sct4)
-sct5<-ggplot(df, aes(x = video_view_count, y = video_comment_count)) + geom_point(aes(color = factor(author_ban_status))) + ggtitle("Scatterplot Video-views vs Video-Comment")
-ggplotly(sct5)
-sct6<-ggplot(df, aes(x = video_like_count, y = video_share_count)) + geom_point(aes(color = factor(author_ban_status))) + ggtitle("Scatterplot Video-like vs Video_share")
-ggplotly(sct6)
-sct7<-ggplot(df, aes(x = video_like_count, y = video_download_count)) + geom_point(aes(color = factor(author_ban_status))) + ggtitle("Scatterplot Video-like vs Video-download")
-ggplotly(sct7)
-sct8<-ggplot(df, aes(x = video_like_count, y = video_comment_count)) + geom_point(aes(color = factor(author_ban_status))) + ggtitle("Scatterplot Video-like vs Video-comment")
-ggplotly(sct8)
 
 #---------------------------------
 # Handling Outliers
@@ -217,6 +149,7 @@ df1<- merge(df, table, by = 0)
 #set "Row.Names" column as row names
 df1 <- df1 %>% column_to_rownames(., var = 'Row.names')
 head(df1)
+
 #=================================
 # LOGISTIC REGRESSION 
 #=================================
@@ -312,6 +245,7 @@ tik_tex<- df %>% select(claim_status,video_transcription_text)
 str(tik_tex)
 str(tik_tex$claim_status)
 table(tik_tex$claim_status)
+
 #---------------------------------
 # TEXT MINING
 #---------------------------------
