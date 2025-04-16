@@ -4,7 +4,6 @@ This project is a hands-on portfolio that demonstrates the application of **Data
 
 👩‍💻 **Author**: Reyna Vargas Antonio  
 🎓 National College of Ireland | School of Computing  
-📧 x23127635@student.ncirl.ie
 
 ---
 
