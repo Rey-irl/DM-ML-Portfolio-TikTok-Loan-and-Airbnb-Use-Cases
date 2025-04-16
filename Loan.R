@@ -25,29 +25,10 @@ library(ggplot2)
 library(Amelia)
 library(RColorBrewer)
 library(plotly)
-library(moments)
-library(ggcorrplot)
-library(corrplot)
-library(GGally)
-library(caret)
-library(mltools)
-library(data.table)
-library(CatEncoders)
-library(car)
-library(DAAG)
-library(factoextra)
-library(ggrepel)
-library(ggfortify)
-library(pROC)
-library(mlbench)
-theme_set(theme_bw())
 
 #=================================
 # LOAD DATASET
 #=================================
-# Switch your working directory to where ever you have downloaded the file.
-setwd('C:/Users/reyna/Documents/MSc in Data Analytics/Data Mining & Machine Learning 1/0. CA')
-
 # Read in our csv and put it in a data.frame.
 df <- read.csv('financial_loan.csv',  header=T, na.strings=c(""), stringsAsFactors = T)
 
@@ -61,26 +42,6 @@ dim(df)
 names(df)
 #Explore Structure of the data frame columns
 str(df)
-
-#---------------------------------
-# Checking unique values in each variable
-#---------------------------------
-#count unique values in each column
-sapply(df, function(x) length(unique(x)))
-
-#set "id" column as row names
-df <- df %>% column_to_rownames(., var = 'id')
-
-#Checking unique values in variables by lenght=1
-sort(unique(df$application_type))
-#Delete columns that does have the same value
-df<-subset(df, select= -application_type)
-
-#Convert in datetime variables that cointain a date
-df$issue_date<-as.Date(df$issue_date, format = "%m-%d-%Y")
-df$last_credit_pull_date<-as.Date(df$last_credit_pull_date, format = "%m-%d-%Y")
-df$last_payment_date<-as.Date(df$last_payment_date, format = "%m-%d-%Y")
-df$next_payment_date<-as.Date(df$next_payment_date, format = "%m-%d-%Y")
 
 #---------------------------------
 # Handling Missing Values
@@ -104,67 +65,6 @@ sum(is.na(df))
 summary(df)
 
 #---------------------------------
-# VISUALIZATIONS OF CARTEGORICAL VARIABLES
-#---------------------------------
-#Barplot according to addres_state
-count_address<-df %>%
-  group_by(address_state)%>%
-  tally(sort=TRUE)
-top_address<-count_address[1:15,]
-address_top<-ggplot(top_address, aes(y=reorder(address_state, -n), x=n, fill=n)) + geom_bar(stat='identity') + geom_col(position = position_dodge()) + 
-  labs(title = "Top of Address State", caption = " Figure X", y = "Address State")
-ggplotly(address_top)
-
-#Barplot according to emp_length
-bar_lenght<-ggplot(data = df) + geom_bar(mapping = aes(y = emp_length, fill = emp_length)) + 
-  labs(title = "Options of Time loan's payment ", caption = " Figure X", y = "Payment terms")
-ggplotly(bar_lenght)
-
-#Barplot according to emp_title
-count_title<-df %>%
-  group_by(emp_title)%>%
-  tally(sort=TRUE)
-top_title<-count_title[1:15,]
-title_top<-ggplot(top_title, aes(y=reorder(emp_title, -n), x=n, fill=n)) + geom_bar(stat='identity') + geom_col(position = position_dodge()) + 
-  labs(title = "The most popular job title supplied when applying for the loan ", caption = " Figure X", y = "Job Title Supplied")
-ggplotly(title_top)
-
-#Barplot according to grade
-grade<-ggplot(data = df) + geom_bar(mapping = aes(y = grade, fill = grade)) + 
-  labs(title = "Lending Club assigned loan grade ", caption = " Figure X", y = "Loan Grades")
-ggplotly(grade)
-
-#Barplot according to home
-home<-ggplot(data = df) + geom_bar(mapping = aes(y = home_ownership, fill = home_ownership)) +
-  labs(title = "Home Ownership Status ", caption = " Figure X", y = "Name of home ownership")
-ggplotly(home)
-
-#Barplot loan stauts
-status<-ggplot(data = df) + geom_bar(mapping = aes(y = loan_status, fill = loan_status)) + 
-  labs(title = "Status of Loan ", caption = " Figure X", y = "Type of Loan Status")
-ggplotly(status)
-
-#Barplot of purpose
-purpose<-ggplot(data = df) + geom_bar(mapping = aes(y = purpose, fill = purpose)) + 
-  labs(title = "Purpose of Loan ", caption = " Figure X", y = "Type of purpose")
-ggplotly(purpose)
-
-#Barplot of LC assigned loan subgrade
-subgrade<-ggplot(data = df) + geom_bar(mapping = aes(y = sub_grade, fill = sub_grade)) +
-  labs(title = "LC assigned load Subgrade ", caption = " Figure X", y = "Type of Load subgrade")
-ggplotly(subgrade)
-
-#Barplot of Term
-term<-ggplot(data = df) + geom_bar(mapping = aes(y = term, fill = term)) + 
-  labs(title = "Payment on the loan", caption = " Figure X", y = "The number of payments on the loan")
-ggplotly(term)
-
-#Barplot of verificacion_status
-verification<-ggplot(data = df) + geom_bar(mapping = aes(y = verification_status, fill = verification_status)) + 
-  labs(title = "Status of verification if the income was verified", caption = " Figure X", y = "Status of verification")
-ggplotly(verification)
-
-#---------------------------------
 # VISUALIZATIONS OF NUMERIC VARIABLES
 #---------------------------------
 summary(df)
@@ -180,28 +80,6 @@ ggplotly(acc)
 payment<-ggplot(df, aes(x=total_payment, fill= verification_status)) + geom_histogram( position="identity") + scale_color_brewer() +
   labs(title = "Payments received to date for total amount funded", caption = " Figure X", x= "Payments received")
 ggplotly(payment)
-
-#---------------------------------
-# VISUALIZATIONS BETWEEN VARIABLES
-#---------------------------------
-#create scatterplot of Loan-Amount vs Annual-Income
-sct1<-ggplot(df, aes(x = loan_amount, y = annual_income)) + geom_point(aes(color = factor(verification_status))) + ggtitle("Distribution of Loan-Amount vs Annual-Income")
-ggplotly(sct1)
-#create scatterplot of Loan-Amount vs dti
-sct2<-ggplot(df, aes(x = loan_amount, y = dti)) + geom_point(aes(color = factor(verification_status))) + ggtitle("Distribution of Loan-Amount vs dti")
-ggplotly(sct2)
-#create scatterplot of Loan-Amount vs installment
-sct3<-ggplot(df, aes(x = loan_amount, y = installment)) + geom_point(aes(color = factor(verification_status))) + ggtitle("Distribution of Loan-Amount vs Installment")
-ggplotly(sct3)
-#create scatterplot of Loan-Amount vs int_rate
-sct4<-ggplot(df, aes(x = loan_amount, y = int_rate)) + geom_point(aes(color = factor(verification_status))) + ggtitle("Distribution of Loan-Amount vs Int-Rate")
-ggplotly(sct4)
-#create scatterplot of Loan-Amount vs total_acc
-sct5<-ggplot(df, aes(x = loan_amount, y = total_acc)) + geom_point(aes(color = factor(verification_status))) + ggtitle("Distribution of Loan-Amount vs Total_acc")
-ggplotly(sct5)
-#create scatterplot of Loan-Amount vs total_payment
-sct6<-ggplot(df, aes(x = loan_amount, y = total_payment)) + geom_point(aes(color = factor(verification_status))) + ggtitle("Distribution of Loan-Amount vs Total_payment")
-ggplotly(sct6)
 
 #---------------------------------
 # Handling Outliers
